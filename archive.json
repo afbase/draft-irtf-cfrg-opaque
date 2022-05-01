@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-04-26T01:53:35.738194+00:00",
+  "timestamp": "2022-05-01T02:14:17.260727+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -27380,6 +27380,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 353,
+      "id": "PR_kwDOD79ejs42-zDd",
+      "title": "Auth ClientFinalize prototype should return export_key",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/353",
+      "state": "OPEN",
+      "author": "cdrubin",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Update pseudocode prototype for function ClientFinalize to match the rest of the document which has it return the `export_key`",
+      "createdAt": "2022-04-28T22:27:41Z",
+      "updatedAt": "2022-04-28T22:27:41Z",
+      "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "baseRefName": "master",
+      "baseRefOid": "3977e9ae3a911144a90271ce84cad72b6945a8a2",
+      "headRepository": "cdrubin/draft-irtf-cfrg-opaque",
+      "headRefName": "master",
+      "headRefOid": "9b0c2a110de7cd6ae77be9abeb4f1297366363e1",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
