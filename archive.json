@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-01T02:14:17.260727+00:00",
+  "timestamp": "2022-05-03T01:57:06.286420+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -27393,13 +27393,53 @@
       "labels": [],
       "body": "Update pseudocode prototype for function ClientFinalize to match the rest of the document which has it return the `export_key`",
       "createdAt": "2022-04-28T22:27:41Z",
-      "updatedAt": "2022-04-28T22:27:41Z",
+      "updatedAt": "2022-05-01T10:24:29Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "3977e9ae3a911144a90271ce84cad72b6945a8a2",
       "headRepository": "cdrubin/draft-irtf-cfrg-opaque",
       "headRefName": "master",
       "headRefOid": "9b0c2a110de7cd6ae77be9abeb4f1297366363e1",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOD79ejs45IqJZ",
+          "commit": {
+            "abbreviatedOid": "9b0c2a1"
+          },
+          "author": "kevinlewi",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM, thanks for the catch!",
+          "createdAt": "2022-05-01T10:24:29Z",
+          "updatedAt": "2022-05-01T10:24:29Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 354,
+      "id": "PR_kwDOD79ejs43IJrg",
+      "title": "Various editorial changes + fixing typos",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/354",
+      "state": "OPEN",
+      "author": "kevinlewi",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "1) Added a reference to the AKE stage being also called the \"login stage\" in various parts in the document\r\n2) Found some places where `RegistrationUpload` was still being referenced, and changed it to `RegistrationRecord`\r\n3) Reformatted parts where parameters are laid out, conforming them all into one of two formats:\r\n- parameter: A parameter with some description.\r\nor\r\n- parameter, a parameter with some description.\r\n(Some places had unnecessary capitalization / missing periods, spaces between colon and parameter, etc.)\r\n4) Added backticks around all named parameters that were referenced outside of a codeblock\r\n",
+      "createdAt": "2022-05-01T10:22:45Z",
+      "updatedAt": "2022-05-01T10:22:57Z",
+      "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "baseRefName": "master",
+      "baseRefOid": "3977e9ae3a911144a90271ce84cad72b6945a8a2",
+      "headRepository": "kevinlewi/draft-irtf-cfrg-opaque",
+      "headRefName": "editorial",
+      "headRefOid": "d6741906871219fd0370b6e2adabbd0dad5fe2eb",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
