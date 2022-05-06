@@ -5,12 +5,12 @@
 Network Working Group                                        D. Bourdrez
 Internet-Draft                                                          
 Intended status: Informational                               H. Krawczyk
-Expires: 28 October 2022                             Algorand Foundation
+Expires: 7 November 2022                             Algorand Foundation
                                                                  K. Lewi
                                                            Novi Research
                                                               C. A. Wood
                                                         Cloudflare, Inc.
-                                                           26 April 2022
+                                                              6 May 2022
 
 
                   The OPAQUE Asymmetric PAKE Protocol
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 October 2022.
+   This Internet-Draft will expire on 7 November 2022.
 
 Copyright Notice
 
@@ -954,7 +954,7 @@ def ClientFinish(client_identity, server_identity, ke2):
   (ke3, session_key) =
     ClientFinalize(client_identity, client_private_key, server_identity,
                     server_public_key, ke2)
-  return (ke3, session_key)
+  return (ke3, session_key, export_key)
 
 6.2.  Server Authentication Functions
 
