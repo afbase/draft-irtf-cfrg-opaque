@@ -1627,21 +1627,20 @@ dictionary attacks. This function also needs to satisfy collision resistance.<a 
       </h2>
 <p id="section-3-1">OPAQUE consists of two stages: registration and authenticated key exchange.
 In the first stage, a client registers its password with the server and stores
-its credential file on the server. In the second stage the client recovers its
-authentication material and uses it to perform a mutually authenticated key
-exchange.<a href="#section-3-1" class="pilcrow">¶</a></p>
+its credential file on the server. In the second stage (also called the
+"login" stage), the client recovers its authentication material and uses it to
+perform a mutually authenticated key exchange.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div id="setup">
 <section id="section-3.1">
         <h3 id="name-setup">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-setup" class="section-name selfRef">Setup</a>
         </h3>
-<p id="section-3.1-1">Previously to both stages, the client and server agree on a configuration, which
+<p id="section-3.1-1">Prior to both stages, the client and server agree on a configuration that
 fully specifies the cryptographic algorithm dependencies necessary to run the
 protocol; see <a href="#configurations" class="xref">Section 7</a> for details.
-The client chooses its password, and the server chooses its own pair
-of keys (server_private_key and server_public_key) for the
-AKE, and chooses a seed (oprf_seed) of Nh bytes for the OPRF.
-The server can use the same pair of keys with multiple
+The server chooses a pair of keys (<code>server_private_key</code> and <code>server_public_key</code>)
+for the AKE, and chooses a seed (<code>oprf_seed</code>) of <code>Nh</code> bytes for the OPRF.
+The server can use this single pair of keys with multiple
 clients and can opt to use multiple seeds (so long as they are kept consistent for
 each client).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 </section>
@@ -1651,8 +1650,8 @@ each client).<a href="#section-3.1-1" class="pilcrow">¶</a></p>
         <h3 id="name-offline-registration">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-offline-registration" class="section-name selfRef">Offline Registration</a>
         </h3>
-<p id="section-3.2-1">Registration is the only part in OPAQUE that requires a server-authenticated
-and confidential channel, either physical, out-of-band, PKI-based, etc.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">Registration is the only stage in OPAQUE that requires a server-authenticated
+and confidential channel: either physical, out-of-band, PKI-based, etc.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">The client inputs its credentials, which includes its password and user
 identifier, and the server inputs its parameters, which includes its private key
 and other information.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
@@ -1684,7 +1683,7 @@ registrations as needed.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 </pre><a href="#section-3.2-6" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-7">These messages are named <code>RegistrationRequest</code>, <code>RegistrationResponse</code>, and
-<code>Record</code>, respectively. Their contents and wire format are defined in
+<code>RegistrationRecord</code>, respectively. Their contents and wire format are defined in
 <a href="#registration-messages" class="xref">Section 5.1</a>.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1729,7 +1728,7 @@ authenticated key exchange (AKE), and their corresponding wire formats are
 specified in <a href="#ake-messages" class="xref">Section 6.4.1</a>.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 <p id="section-3.3-5">The rest of this document describes the details of these stages in detail.
 <a href="#client-material" class="xref">Section 4</a> describes how client credential information is
-generated, encoded, stored on the server on registration, and recovered on
+generated, encoded, and stored on the server during registration, and recovered during
 login. <a href="#offline-phase" class="xref">Section 5</a> describes the first registration stage of the protocol,
 and <a href="#online-phase" class="xref">Section 6</a> describes the second authentication stage of the protocol.
 <a href="#configurations" class="xref">Section 7</a> describes how to instantiate OPAQUE using different
@@ -1784,10 +1783,10 @@ application credential information.<a href="#section-4-7" class="pilcrow">¶</a>
 CreateCleartextCredentials
 
 Input:
-- server_public_key, The encoded server public key for the AKE protocol.
-- client_public_key, The encoded client public key for the AKE protocol.
-- server_identity, The optional encoded server identity.
-- client_identity, The optional encoded client identity.
+- server_public_key, the encoded server public key for the AKE protocol.
+- client_public_key, the encoded client public key for the AKE protocol.
+- server_identity, the optional encoded server identity.
+- client_identity, the optional encoded client identity.
 
 Output:
 - cleartext_credentials, a CleartextCredentials structure.
@@ -1827,9 +1826,9 @@ struct {
 } Envelope;
 </pre><a href="#section-4.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1.1-3">nonce: A unique nonce of length <code>Nn</code> used to protect this Envelope.<a href="#section-4.1.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1.1-4">auth_tag: Authentication tag protecting the contents of the envelope, covering
-the envelope nonce, and <code>CleartextCredentials</code>.<a href="#section-4.1.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1.1-3">nonce: A unique nonce of length <code>Nn</code> used to protect this <code>Envelope</code>.<a href="#section-4.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1.1-4">auth_tag: An authentication tag protecting the contents of the envelope, covering
+the envelope nonce and <code>CleartextCredentials</code>.<a href="#section-4.1.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="envelope-creation">
@@ -1844,14 +1843,14 @@ below.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
 Store
 
 Input:
-- randomized_pwd, randomized password.
-- server_public_key, The encoded server public key for
+- randomized_pwd, a randomized password.
+- server_public_key, the encoded server public key for
   the AKE protocol.
-- server_identity, The optional encoded server identity.
-- client_identity, The optional encoded client identity.
+- server_identity, the optional encoded server identity.
+- client_identity, the optional encoded client identity.
 
 Output:
-- envelope, the client's `Envelope` structure.
+- envelope, the client's Envelope structure.
 - client_public_key, the client's AKE public key.
 - masking_key, an encryption key used by the server with the sole purpose
   of defending against client enumeration attacks.
@@ -1888,14 +1887,14 @@ defined below.<a href="#section-4.1.3-1" class="pilcrow">¶</a></p>
 Recover
 
 Input:
-- randomized_pwd, randomized password.
-- server_public_key, The encoded server public key for the AKE protocol.
-- envelope, the client's `Envelope` structure.
-- server_identity, The optional encoded server identity.
-- client_identity, The optional encoded client identity.
+- randomized_pwd, a randomized password.
+- server_public_key, the encoded server public key for the AKE protocol.
+- envelope, the client's Envelope structure.
+- server_identity, the optional encoded server identity.
+- client_identity, the optional encoded client identity.
 
 Output:
-- client_private_key, The encoded client private key for the AKE protocol.
+- client_private_key, the encoded client private key for the AKE protocol.
 - export_key, an additional client key.
 
 Exceptions:
@@ -1930,21 +1929,21 @@ def Recover(randomized_pwd, server_public_key, envelope,
 <p id="section-5-1">The registration process proceeds as follows. The client inputs
 the following values:<a href="#section-5-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5-2.1">password: client password.<a href="#section-5-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5-2.1">password: The client's password.<a href="#section-5-2.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-2.2">creds: client credentials, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-5-2.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-2.2">creds: The client credentials, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-5-2.2" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-5-3">The server inputs the following values:<a href="#section-5-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5-4.1">server_private_key: server private key for the AKE protocol.<a href="#section-5-4.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5-4.1">server_private_key: The server private key for the AKE protocol.<a href="#section-5-4.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-4.2">server_public_key: server public key for the AKE protocol.<a href="#section-5-4.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-4.2">server_public_key: The server public key for the AKE protocol.<a href="#section-5-4.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-4.3">credential_identifier: unique identifier for the client's
+        <li class="normal" id="section-5-4.3">credential_identifier: A unique identifier for the client's
 credential, generated by the server.<a href="#section-5-4.3" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-4.4">oprf_seed: seed used to derive per-client OPRF keys.<a href="#section-5-4.4" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-4.4">oprf_seed: A seed used to derive per-client OPRF keys.<a href="#section-5-4.4" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-5-5">The registration protocol then runs as shown below:<a href="#section-5-5" class="pilcrow">¶</a></p>
@@ -1991,13 +1990,7 @@ struct {
 } RegistrationRequest;
 </pre><a href="#section-5.1-1" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-5.1-2">
-          <dt id="section-5.1-2.1">data</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-2.2">
-            <p id="section-5.1-2.2.1">A serialized OPRF group element.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-</dl>
+<p id="section-5.1-2">blinded_message: A serialized OPRF group element.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-3">
 <pre>
 struct {
@@ -2006,45 +1999,24 @@ struct {
 } RegistrationResponse;
 </pre><a href="#section-5.1-3" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-5.1-4">
-          <dt id="section-5.1-4.1">data</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-4.2">
-            <p id="section-5.1-4.2.1">A serialized OPRF group element.<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-<dt id="section-5.1-4.3">server_public_key</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-4.4">
-            <p id="section-5.1-4.4.1">The server's encoded public key that will be used for the online authenticated key exchange stage.<a href="#section-5.1-4.4.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-</dl>
-<div class="alignLeft art-text artwork" id="section-5.1-5">
+<p id="section-5.1-4">evaluated_message: A serialized OPRF group element.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5">server_public_key: The server's encoded public key that will be used for
+the online AKE stage.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-6">
 <pre>
 struct {
   uint8 client_public_key[Npk];
   uint8 masking_key[Nh];
   Envelope envelope;
 } RegistrationRecord;
-</pre><a href="#section-5.1-5" class="pilcrow">¶</a>
+</pre><a href="#section-5.1-6" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-5.1-6">
-          <dt id="section-5.1-6.1">client_public_key</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-6.2">
-            <p id="section-5.1-6.2.1">The client's encoded public key, corresponding to the private key <code>client_private_key</code>.<a href="#section-5.1-6.2.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-<dt id="section-5.1-6.3">masking_key</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-6.4">
-            <p id="section-5.1-6.4.1">An encryption key used by the server to preserve confidentiality of the envelope during login
-to defend against client enumeration attacks.<a href="#section-5.1-6.4.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-<dt id="section-5.1-6.5">envelope</dt>
-          <dd style="margin-left: 1.5em" id="section-5.1-6.6">
-            <p id="section-5.1-6.6.1">The client's <code>Envelope</code> structure.<a href="#section-5.1-6.6.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-</dl>
+<p id="section-5.1-7">client_public_key: The client's encoded public key, corresponding to
+the private key <code>client_private_key</code>.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8">masking_key: An encryption key used by the server to preserve
+confidentiality of the envelope during login to defend against
+client enumeration attacks.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9">envelope: The client's <code>Envelope</code> structure.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="registration-functions">
@@ -2148,11 +2120,11 @@ def FinalizeRequest(password, blind, response, server_identity, client_identity)
   (envelope, client_public_key, masking_key, export_key) =
     Store(randomized_pwd, response.server_public_key,
           server_identity, client_identity)
-  Create RegistrationUpload record with (client_public_key, masking_key, envelope)
+  Create RegistrationRecord record with (client_public_key, masking_key, envelope)
   return (record, export_key)
 </pre><a href="#section-5.2.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.3-3">See <a href="#online-phase" class="xref">Section 6</a> for details about the output export_key usage.<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.2.3-3">See <a href="#online-phase" class="xref">Section 6</a> for details about the output <code>export_key</code> usage.<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.2.3-4">Upon completion of this function, the client MUST send <code>record</code> to the server.<a href="#section-5.2.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2178,9 +2150,9 @@ may be unique for each client.<a href="#section-5.3-1" class="pilcrow">¶</a></p
       <h2 id="name-online-authenticated-key-exc">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-online-authenticated-key-exc" class="section-name selfRef">Online Authenticated Key Exchange</a>
       </h2>
-<p id="section-6-1">The generic outline of OPAQUE with a 3-message AKE protocol includes three messages
-ke1, ke2, and ke3, where ke1 and ke2 include key exchange shares, e.g., DH values, sent
-by the client and server, respectively, and ke3 provides explicit client authentication and
+<p id="section-6-1">The generic outline of OPAQUE with a 3-message AKE protocol includes three messages:
+<code>KE1</code>, <code>KE2</code>, and <code>KE3</code>, where <code>KE1</code> and <code>KE2</code> include key exchange shares, e.g., DH values, sent
+by the client and server, respectively, and <code>KE3</code> provides explicit client authentication and
 full forward security (without it, forward secrecy is only achieved against eavesdroppers,
 which is insufficient for OPAQUE security).<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">This section describes the online authenticated key exchange protocol flow,
@@ -2192,24 +2164,24 @@ server agree on (1) a mutually authenticated shared secret key and (2) any optio
 application information exchange during the handshake.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">In this stage, the client inputs the following values:<a href="#section-6-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-4.1">password: client password.<a href="#section-6-4.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6-4.1">password: The client's password.<a href="#section-6-4.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-4.2">client_identity: client identity, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-6-4.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-4.2">client_identity: The client identity, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-6-4.2" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-6-5">The server inputs the following values:<a href="#section-6-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-6.1">server_private_key: server private for the AKE protocol.<a href="#section-6-6.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6-6.1">server_private_key: The server's private key for the AKE protocol.<a href="#section-6-6.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-6.2">server_public_key: server public for the AKE protocol.<a href="#section-6-6.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.2">server_public_key: The server's public key for the AKE protocol.<a href="#section-6-6.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-6.3">server_identity: server identity, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-6-6.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.3">server_identity: The server identity, as described in <a href="#client-material" class="xref">Section 4</a>.<a href="#section-6-6.3" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-6.4">record: RegistrationUpload corresponding to the client's registration.<a href="#section-6-6.4" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.4">record: The <code>RegistrationRecord</code> object corresponding to the client's registration.<a href="#section-6-6.4" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-6.5">credential_identifier: an identifier that uniquely represents the credential.<a href="#section-6-6.5" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.5">credential_identifier: An identifier that uniquely represents the credential.<a href="#section-6-6.5" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-6.6">oprf_seed: seed used to derive per-client OPRF keys.<a href="#section-6-6.6" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.6">oprf_seed: The seed used to derive per-client OPRF keys.<a href="#section-6-6.6" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-6-7">The client receives two outputs: a session secret and an export key. The export
@@ -2249,18 +2221,18 @@ client's.<a href="#section-6-7" class="pilcrow">¶</a></p>
 </div>
 <p id="section-6-10">Both client and server may use implicit internal state objects to keep necessary
 material for the OPRF and AKE, <code>client_state</code> and <code>server_state</code>, respectively.<a href="#section-6-10" class="pilcrow">¶</a></p>
-<p id="section-6-11">The client state may have the following named fields:<a href="#section-6-11" class="pilcrow">¶</a></p>
+<p id="section-6-11">The client state may have the following fields:<a href="#section-6-11" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-12.1">password, the input password; and<a href="#section-6-12.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6-12.1">password: The client's password.<a href="#section-6-12.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-12.2">blind, the random blinding inverter returned by <code>Blind()</code>; and<a href="#section-6-12.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-12.2">blind: The random blinding inverter returned by <code>Blind()</code>.<a href="#section-6-12.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-12.3">client_ake_state, the client's AKE state if necessary.<a href="#section-6-12.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-12.3">client_ake_state: The client's AKE state if necessary.<a href="#section-6-12.3" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-6-13">The server state may have the following fields:<a href="#section-6-13" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-14.1">server_ake_state, the server's AKE state if necessary.<a href="#section-6-14.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6-14.1">server_ake_state: The server's AKE state if necessary.<a href="#section-6-14.1" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-6-15">The rest of this section describes these authenticated key exchange messages
@@ -2357,7 +2329,7 @@ def ServerInit(server_identity, server_private_key, server_public_key,
 </div>
 <p id="section-6.2-2">Since the OPRF is a two-message protocol, KE3 has no element of the OPRF. We can
 therefore call the AKE's <code>ServerFinalize()</code> directly. The <code>ServerFinalize()</code> function
-MUST take KE3 as input and MUST verify the client authentication material it contains
+MUST take <code>KE3</code> as input and MUST verify the client authentication material it contains
 before the <code>session_key</code> value can be used. This verification is paramount in order to
 ensure forward secrecy against active attackers.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <p id="section-6.2-3">This function MUST NOT return the <code>session_key</code> value if the client authentication
@@ -2381,13 +2353,7 @@ struct {
 } CredentialRequest;
 </pre><a href="#section-6.3.1-1" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-6.3.1-2">
-            <dt id="section-6.3.1-2.1">data</dt>
-            <dd style="margin-left: 1.5em" id="section-6.3.1-2.2">
-              <p id="section-6.3.1-2.2.1">A serialized OPRF group element.<a href="#section-6.3.1-2.2.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-</dl>
+<p id="section-6.3.1-2">blinded_message: A serialized OPRF group element.<a href="#section-6.3.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3.1-3">
 <pre>
 struct {
@@ -2397,24 +2363,11 @@ struct {
 } CredentialResponse;
 </pre><a href="#section-6.3.1-3" class="pilcrow">¶</a>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-6.3.1-4">
-            <dt id="section-6.3.1-4.1">data</dt>
-            <dd style="margin-left: 1.5em" id="section-6.3.1-4.2">
-              <p id="section-6.3.1-4.2.1">A serialized OPRF group element.<a href="#section-6.3.1-4.2.1" class="pilcrow">¶</a></p>
-</dd>
-            <dd class="break"></dd>
-<dt id="section-6.3.1-4.3">masking_nonce</dt>
-            <dd style="margin-left: 1.5em" id="section-6.3.1-4.4">
-              <p id="section-6.3.1-4.4.1">A nonce used for the confidentiality of the masked_response field.<a href="#section-6.3.1-4.4.1" class="pilcrow">¶</a></p>
-</dd>
-            <dd class="break"></dd>
-<dt id="section-6.3.1-4.5">masked_response</dt>
-            <dd style="margin-left: 1.5em" id="section-6.3.1-4.6">
-              <p id="section-6.3.1-4.6.1">An encrypted form of the server's public key and the client's <code>Envelope</code>
-structure.<a href="#section-6.3.1-4.6.1" class="pilcrow">¶</a></p>
-</dd>
-          <dd class="break"></dd>
-</dl>
+<p id="section-6.3.1-4">evaluated_message: A serialized OPRF group element.<a href="#section-6.3.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.3.1-5">masking_nonce: A nonce used for the confidentiality of the
+<code>masked_response</code> field.<a href="#section-6.3.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.3.1-6">masked_response: An encrypted form of the server's public key and the
+client's <code>Envelope</code> structure.<a href="#section-6.3.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="credential-retrieval-functions">
@@ -2493,27 +2446,29 @@ def CreateCredentialResponse(request, server_public_key, record,
   masked_response = xor(credential_response_pad,
                         concat(server_public_key, record.envelope))
   Create CredentialResponse response with (evaluated_message, masking_nonce, masked_response)
-
   return response
 </pre><a href="#section-6.3.2.2-3" class="pilcrow">¶</a>
 </div>
 <p id="section-6.3.2.2-4">In the case of a record that does not exist and if client enumeration prevention is desired,
 the server MUST respond to the credential request to fake the existence of the record.
-The server SHOULD invoke the CreateCredentialResponse function with a fake client record
+The server SHOULD invoke the <code>CreateCredentialResponse</code> function with a fake client record
 argument that is configured so that:<a href="#section-6.3.2.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.3.2.2-5.1">record.client_public_key is set to a randomly generated public key of length Npk<a href="#section-6.3.2.2-5.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6.3.2.2-5.1">
+                <code>record.client_public_key</code> is set to a randomly generated public key of length <code>Npk</code><a href="#section-6.3.2.2-5.1" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-6.3.2.2-5.2">record.masking_key is set to a random byte string of length Nh<a href="#section-6.3.2.2-5.2" class="pilcrow">¶</a>
+              <li class="normal" id="section-6.3.2.2-5.2">
+                <code>record.masking_key</code> is set to a random byte string of length <code>Nh</code><a href="#section-6.3.2.2-5.2" class="pilcrow">¶</a>
 </li>
-              <li class="normal" id="section-6.3.2.2-5.3">record.envelope is set to the byte string consisting only of zeros of length Ne<a href="#section-6.3.2.2-5.3" class="pilcrow">¶</a>
+              <li class="normal" id="section-6.3.2.2-5.3">
+                <code>record.envelope</code> is set to the byte string consisting only of zeros of length <code>Ne</code><a href="#section-6.3.2.2-5.3" class="pilcrow">¶</a>
 </li>
             </ul>
 <p id="section-6.3.2.2-6">It is RECOMMENDED that a fake client record is created once (e.g. as the first user record
 of the application) and stored alongside legitimate client records. This allows servers to locate
 the record in time comparable to that of a legitimate client record.<a href="#section-6.3.2.2-6" class="pilcrow">¶</a></p>
 <p id="section-6.3.2.2-7">Note that the responses output by either scenario are indistinguishable to an adversary
-that is unable to guess the registered password for the client corresponding to credential_identifier.<a href="#section-6.3.2.2-7" class="pilcrow">¶</a></p>
+that is unable to guess the registered password for the client corresponding to <code>credential_identifier</code>.<a href="#section-6.3.2.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="recover-credentials">
@@ -2576,19 +2531,19 @@ def RecoverCredentials(password, blind, response,
 3DH, a 3-message AKE which satisfies the forward secrecy and KCI properties
 discussed in <a href="#security-considerations" class="xref">Section 10</a>.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
 <p id="section-6.4-2">The AKE client state <code>client_ake_state</code> mentioned in <a href="#online-phase" class="xref">Section 6</a> has the
-following named fields:<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+following fields:<a href="#section-6.4-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.4-3.1">client_secret, an opaque byte string of length Nsk; and<a href="#section-6.4-3.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6.4-3.1">client_secret: An opaque byte string of length <code>Nsk</code>.<a href="#section-6.4-3.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-6.4-3.2">ke1, a value of type KE1.<a href="#section-6.4-3.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-6.4-3.2">ke1: a value of type <code>KE1</code>.<a href="#section-6.4-3.2" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-6.4-4">The server state <code>server_ake_state</code> mentioned in <a href="#online-phase" class="xref">Section 6</a> has the
 following fields:<a href="#section-6.4-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.4-5.1">expected_client_mac, an opaque byte string of length Nm; and<a href="#section-6.4-5.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6.4-5.1">expected_client_mac: An opaque byte string of length <code>Nm</code>.<a href="#section-6.4-5.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-6.4-5.2">session_key, an opaque byte string of length Nx.<a href="#section-6.4-5.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-6.4-5.2">session_key: An opaque byte string of length <code>Nx</code>.<a href="#section-6.4-5.2" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-6.4-6"><a href="#ake-client" class="xref">Section 6.4.4</a> and <a href="#ake-server" class="xref">Section 6.4.5</a> specify the inner workings of client and
@@ -2610,8 +2565,8 @@ struct {
 } AuthRequest;
 </pre><a href="#section-6.4.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.1-3">client_nonce : A fresh randomly generated nonce of length Nn.<a href="#section-6.4.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-4">client_keyshare : Serialized client ephemeral key share of fixed size Npk.<a href="#section-6.4.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-3">client_nonce: A fresh randomly generated nonce of length <code>Nn</code>.<a href="#section-6.4.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-4">client_keyshare: A serialized client ephemeral key share of fixed size <code>Npk</code>.<a href="#section-6.4.1-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.1-5">
 <pre>
 struct {
@@ -2620,8 +2575,8 @@ struct {
 } KE1;
 </pre><a href="#section-6.4.1-5" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.1-6">credential_request: A CredentialRequest structure.<a href="#section-6.4.1-6" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-7">auth_request: An AuthRequest structure.<a href="#section-6.4.1-7" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-6">credential_request: A <code>CredentialRequest</code> structure.<a href="#section-6.4.1-6" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-7">auth_request: An <code>AuthRequest</code> structure.<a href="#section-6.4.1-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.1-8">
 <pre>
 struct {
@@ -2631,11 +2586,11 @@ struct {
 } AuthResponse;
 </pre><a href="#section-6.4.1-8" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.1-9">server_nonce : A fresh randomly generated nonce of length Nn.<a href="#section-6.4.1-9" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-10">server_keyshare : Server ephemeral key share of fixed size Npk, where Npk
+<p id="section-6.4.1-9">server_nonce: A fresh randomly generated nonce of length <code>Nn</code>.<a href="#section-6.4.1-9" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-10">server_keyshare: Server ephemeral key share of fixed size <code>Npk</code>, where <code>Npk</code>
 depends on the corresponding prime order group.<a href="#section-6.4.1-10" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-11">server_mac : An authentication tag computed over the handshake transcript
-computed using Km2, defined below.<a href="#section-6.4.1-11" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-11">server_mac: An authentication tag computed over the handshake transcript
+computed using <code>Km2</code>, defined below.<a href="#section-6.4.1-11" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.1-12">
 <pre>
 struct {
@@ -2644,8 +2599,8 @@ struct {
 } KE2;
 </pre><a href="#section-6.4.1-12" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.1-13">credential_response: A CredentialResponse structure.<a href="#section-6.4.1-13" class="pilcrow">¶</a></p>
-<p id="section-6.4.1-14">auth_response: An AuthResponse structure.<a href="#section-6.4.1-14" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-13">credential_response: A <code>CredentialResponse</code> structure.<a href="#section-6.4.1-13" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-14">auth_response: An <code>AuthResponse</code> structure.<a href="#section-6.4.1-14" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.1-15">
 <pre>
 struct {
@@ -2653,8 +2608,8 @@ struct {
 } KE3;
 </pre><a href="#section-6.4.1-15" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.1-16">client_mac : An authentication tag computed over the handshake transcript
-of fixed size Nm, computed using Km2, defined below.<a href="#section-6.4.1-16" class="pilcrow">¶</a></p>
+<p id="section-6.4.1-16">client_mac: An authentication tag computed over the handshake transcript
+of fixed size <code>Nm</code>, computed using <code>Km2</code>, defined below.<a href="#section-6.4.1-16" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="key-creation">
@@ -2713,7 +2668,7 @@ Derive-Secret(Secret, Label, Transcript-Hash) =
     Expand-Label(Secret, Label, Transcript-Hash, Nx)
 </pre><a href="#section-6.4.3.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.3.1-5">Note that the Label parameter is not a NULL-terminated string.<a href="#section-6.4.3.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.4.3.1-5">Note that the <code>Label</code> parameter is not a NULL-terminated string.<a href="#section-6.4.3.1-5" class="pilcrow">¶</a></p>
 <p id="section-6.4.3.1-6">OPAQUE-3DH can optionally include shared <code>context</code> information in the
 transcript, such as configuration parameters or application-specific info, e.g.
 "appXYZ-v1.2.3".<a href="#section-6.4.3.1-6" class="pilcrow">¶</a></p>
