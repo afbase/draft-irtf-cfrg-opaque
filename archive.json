@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-03T01:57:06.286420+00:00",
+  "timestamp": "2022-05-08T01:49:21.828359+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -27386,24 +27386,26 @@
       "id": "PR_kwDOD79ejs42-zDd",
       "title": "Auth ClientFinalize prototype should return export_key",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/353",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cdrubin",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Update pseudocode prototype for function ClientFinalize to match the rest of the document which has it return the `export_key`",
       "createdAt": "2022-04-28T22:27:41Z",
-      "updatedAt": "2022-05-01T10:24:29Z",
+      "updatedAt": "2022-05-06T10:54:03Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "3977e9ae3a911144a90271ce84cad72b6945a8a2",
       "headRepository": "cdrubin/draft-irtf-cfrg-opaque",
       "headRefName": "master",
       "headRefOid": "9b0c2a110de7cd6ae77be9abeb4f1297366363e1",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2022-05-06T10:54:03Z",
+      "mergedAt": "2022-05-06T10:54:03Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "fbcb58299b6327b3327fc8d38a21e579de1a79d3"
+      },
       "comments": [],
       "reviews": [
         {
@@ -27426,26 +27428,50 @@
       "id": "PR_kwDOD79ejs43IJrg",
       "title": "Various editorial changes + fixing typos",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/354",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "kevinlewi",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "1) Added a reference to the AKE stage being also called the \"login stage\" in various parts in the document\r\n2) Found some places where `RegistrationUpload` was still being referenced, and changed it to `RegistrationRecord`\r\n3) Reformatted parts where parameters are laid out, conforming them all into one of two formats:\r\n- parameter: A parameter with some description.\r\nor\r\n- parameter, a parameter with some description.\r\n(Some places had unnecessary capitalization / missing periods, spaces between colon and parameter, etc.)\r\n4) Added backticks around all named parameters that were referenced outside of a codeblock\r\n",
       "createdAt": "2022-05-01T10:22:45Z",
-      "updatedAt": "2022-05-01T10:22:57Z",
+      "updatedAt": "2022-05-06T10:56:45Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "3977e9ae3a911144a90271ce84cad72b6945a8a2",
       "headRepository": "kevinlewi/draft-irtf-cfrg-opaque",
       "headRefName": "editorial",
       "headRefOid": "d6741906871219fd0370b6e2adabbd0dad5fe2eb",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "closedAt": "2022-05-06T10:56:45Z",
+      "mergedAt": "2022-05-06T10:56:45Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "78b3e81eceb98202a0fd32afa36c158392c97ecd"
+      },
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Lots of improvements in here! \ud83c\udf89 ",
+          "createdAt": "2022-05-06T10:56:41Z",
+          "updatedAt": "2022-05-06T10:56:41Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOD79ejs45fOga",
+          "commit": {
+            "abbreviatedOid": "d674190"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-05-06T10:56:18Z",
+          "updatedAt": "2022-05-06T10:56:18Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
