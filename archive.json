@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-08T01:49:21.828359+00:00",
+  "timestamp": "2022-05-19T01:58:12.686648+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -7561,6 +7561,24 @@
           "updatedAt": "2022-03-08T22:01:18Z"
         }
       ]
+    },
+    {
+      "number": 356,
+      "id": "I_kwDOD79ejs5JzrMU",
+      "title": "Mismatch of function signatures in AKE section",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/356",
+      "state": "OPEN",
+      "author": "kevinlewi",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "kevinlewi"
+      ],
+      "labels": [],
+      "body": "There are inconsistencies in the way we describe returning structs from functions.\r\n\r\nIn most of the functions, we say something like:\r\n\r\n  Create CredentialRequest request with blinded_message\r\n  return (request, blind)\r\n  \r\n    Create CredentialResponse response with (evaluated_message, masking_nonce, masked_response)\r\n  return response\r\n  \r\n  \r\nBut for the AKE section, in some places, we say:\r\n\r\n  return KE1(request, ake_1)\r\n\r\n  return KE2(response, ake_2)\r\n  \r\nThis is also not right, since we should be returning ake_1 and ake_2 directly in these cases.",
+      "createdAt": "2022-05-17T08:36:59Z",
+      "updatedAt": "2022-05-17T08:36:59Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -27472,6 +27490,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 355,
+      "id": "PR_kwDOD79ejs437_8w",
+      "title": "Reordering AKE subsections",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/355",
+      "state": "OPEN",
+      "author": "kevinlewi",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This finishes the last portion of #352, in which I wanted to reorder the subsections slightly in the AKE portion to make things more clear.\r\n\r\nBefore this change, we had the following ordering of subsections in AKE:\r\n\r\n\"Online Authenticated Key Exchange\" main section with protocol description at a high level \r\n- \"Client Authentication Functions\" subsection\r\n- \"Server Authentication Functions\" subsection\r\n- \"Credential Retrieval\" subsection\r\n- \"AKE Protocol\"\r\n  - \"AKE Messages\" section, this is where KE1, KE2, KE3 are defined\r\n  - \"3DH Client Functions\" subsection\r\n  - \"3DH Server Functions\" subsection\r\n\r\nSo the main problem was that the first two subsections, Client/Server Authentication Functions, were outputting messages that were only defined in the \"AKE Messages\" subsection, which was much later.\r\n\r\nThis seems like quite a different structure from the Registration portion, which is currently organized like:\r\n\r\n\"Client Credential Storage and Key Recovery\" main section\r\n\"Offline Registration\" main section\r\n- \"Registration Messages\" subsection\r\n- \"Registration Functions\" subsection\r\n\r\nwhich is a way simpler layout.\r\n\r\n\r\n--------\r\n\r\nSo the change I am making here is to:\r\n1) Combine the \"Client Authentication Functions\" and \"Server Authentication Functions\" into one subsection, called \"AKE Functions\", so that it matches up with the layout of registration\r\n2) Put \"AKE Messages\" as the section immediately following the main protocol description, followed by the new \"AKE Functions\" subsection\r\n3) Leave the remainder of the subsections as-is in terms of ordering. So the new layout looks like this now:\r\n\r\n\"Online Authenticated Key Exchange\" main section with protocol description at a high level \r\n- \"AKE Messages\" subsection\r\n- \"AKE Functions\" subsection\r\n- \"Credential Retrieval\" subsection\r\n- \"AKE Protocol\"\r\n  - \"3DH Client Functions\" subsection\r\n  - \"3DH Server Functions\" subsection\r\n  \r\n  Hope this makes sense!\r\n  \r\n  In making this change, there were also some smaller adjustments I made, as well:\r\n  - renamed the 3dh functions from \"Start\" to \"AuthStart\", \"Response\" to \"AuthRespond\" (it should be at least be a verb), \"ClientFinalize\" to \"AuthClientFinalize\", and \"ServerFinalize\" to \"AuthServerFinalize\"\r\n  - I also added a definition for ServerFinish, which simply calls AuthServerFinalize, but this was previously a completely undefined function\r\n  - Added text at the beginning of the \"AKE Functions\" subsection to clarify that the subroutines that we call there are defined in later sections\r\n\r\nBtw, a change I was tempted to make, but did not end up making was to combine the \"3DH client functions\" and \"3DH server functions\" also into one section. We don't seem to be doing the splitting of client vs. server functions elsewhere anymore (especially after this change), so it is necessary that we do it in the very last section?\r\n",
+      "createdAt": "2022-05-17T08:18:29Z",
+      "updatedAt": "2022-05-17T08:22:39Z",
+      "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "baseRefName": "master",
+      "baseRefOid": "78b3e81eceb98202a0fd32afa36c158392c97ecd",
+      "headRepository": "kevinlewi/draft-irtf-cfrg-opaque",
+      "headRefName": "reorder_ake_subsections",
+      "headRefOid": "2af82e2067ef550d653bef6f18d9f4c6e63564cf",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
