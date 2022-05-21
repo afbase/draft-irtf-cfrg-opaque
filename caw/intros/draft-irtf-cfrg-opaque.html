@@ -1027,7 +1027,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Bourdrez, et al.</td>
-<td class="center">Expires 21 November 2022</td>
+<td class="center">Expires 22 November 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1040,12 +1040,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-irtf-cfrg-opaque-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-05-20" class="published">20 May 2022</time>
+<time datetime="2022-05-21" class="published">21 May 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-11-21">21 November 2022</time></dd>
+<dd class="expires"><time datetime="2022-11-22">22 November 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1105,7 +1105,7 @@ based on 3DH.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 21 November 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 22 November 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2000,8 +2000,8 @@ the client's credentials for later use. Moreover, the client MAY use the output
         <h3 id="name-registration-messages">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-registration-messages" class="section-name selfRef">Registration Messages</a>
         </h3>
-<p id="section-5.1-1">This section contains definitions of the RegistrationRequest,
-RegistrationResponse, and RegistrationRecord messages exchanged between
+<p id="section-5.1-1">This section contains definitions of the <code>RegistrationRequest</code>,
+<code>RegistrationResponse</code>, and <code>RegistrationRecord</code> messages exchanged between
 client and server during registration.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-2">
 <pre>
@@ -2045,8 +2045,8 @@ client enumeration attacks.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-registration-functions" class="section-name selfRef">Registration Functions</a>
         </h3>
 <p id="section-5.2-1">This section contains definitions of the functions used by client and server
-during registration, including CreateRegistrationRequest, CreateRegistrationResponse,
-and FinalizeRegistrationRequest.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+during registration, including <code>CreateRegistrationRequest</code>, <code>CreateRegistrationResponse</code>,
+and <code>FinalizeRegistrationRequest</code>.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <div id="createregistrationrequest">
 <section id="section-5.2.1">
           <h4 id="name-createregistrationrequest">
@@ -2335,7 +2335,7 @@ in later sections:
           <h4 id="name-clientinit">
 <a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-clientinit" class="section-name selfRef">ClientInit</a>
           </h4>
-<p id="section-6.2.1-1">The ClientInit function begins the AKE protocol and produces the client's KE1
+<p id="section-6.2.1-1">The <code>ClientInit</code> function begins the AKE protocol and produces the client's <code>KE1</code>
 output for the server.<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2.1-2">
 <pre>
@@ -2364,8 +2364,8 @@ def ClientInit(password):
           <h4 id="name-serverinit">
 <a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-serverinit" class="section-name selfRef">ServerInit</a>
           </h4>
-<p id="section-6.2.2-1">The ServerInit function continues the AKE protocol by processing the client's KE1 message
-and producing the server's KE2 output.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2.2-1">The <code>ServerInit</code> function continues the AKE protocol by processing the client's <code>KE1</code> message
+and producing the server's <code>KE2</code> output.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2.2-2">
 <pre>
 ServerInit
@@ -2400,8 +2400,8 @@ def ServerInit(server_identity, server_private_key, server_public_key,
           <h4 id="name-clientfinish">
 <a href="#section-6.2.3" class="section-number selfRef">6.2.3. </a><a href="#name-clientfinish" class="section-name selfRef">ClientFinish</a>
           </h4>
-<p id="section-6.2.3-1">The ClientFinish function completes the AKE protocol for the client and
-produces the client's KE3 output for the server, as well as the <code>session_key</code>
+<p id="section-6.2.3-1">The <code>ClientFinish</code> function completes the AKE protocol for the client and
+produces the client's <code>KE3</code> output for the server, as well as the <code>session_key</code>
 and <code>export_key</code> outputs from the AKE.<a href="#section-6.2.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2.3-2">
 <pre>
@@ -2439,8 +2439,8 @@ def ClientFinish(client_identity, server_identity, ke2):
           <h4 id="name-serverfinish">
 <a href="#section-6.2.4" class="section-number selfRef">6.2.4. </a><a href="#name-serverfinish" class="section-name selfRef">ServerFinish</a>
           </h4>
-<p id="section-6.2.4-1">The ServerFinish function completes the AKE protocol for the server, yielding the <code>session_key</code>.
-Since the OPRF is a two-message protocol, KE3 has no element of the OPRF, and it
+<p id="section-6.2.4-1">The <code>ServerFinish</code> function completes the AKE protocol for the server, yielding the <code>session_key</code>.
+Since the OPRF is a two-message protocol, <code>KE3</code> has no element of the OPRF, and it
 therefore invokes the AKE's <code>AuthServerFinalize</code> directly. The <code>AuthServerFinalize</code> function
 takes <code>KE3</code> as input and MUST verify the client authentication material it contains
 before the <code>session_key</code> value can be used. This verification is necessary to ensure
@@ -2481,7 +2481,7 @@ recover the client credentials.<a href="#section-6.3-1" class="pilcrow">¶</a></
           <h4 id="name-credential-retrieval-messag">
 <a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-credential-retrieval-messag" class="section-name selfRef">Credential Retrieval Messages</a>
           </h4>
-<p id="section-6.3.1-1">This section describes the CredentialRequest and CredentialResponse messages exchanged
+<p id="section-6.3.1-1">This section describes the <code>CredentialRequest</code> and <code>CredentialResponse</code> messages exchanged
 between client and server to perform credential retrieval.<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3.1-2">
 <pre>
@@ -2512,15 +2512,15 @@ client's <code>Envelope</code> structure.<a href="#section-6.3.1-7" class="pilcr
           <h4 id="name-credential-retrieval-functi">
 <a href="#section-6.3.2" class="section-number selfRef">6.3.2. </a><a href="#name-credential-retrieval-functi" class="section-name selfRef">Credential Retrieval Functions</a>
           </h4>
-<p id="section-6.3.2-1">This section describes the CreateCredentialRequest, CreateCredentialResponse,
-and RecoverCredentials functions used for credential retrieval.<a href="#section-6.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.2-1">This section describes the <code>CreateCredentialRequest</code>, <code>CreateCredentialResponse</code>,
+and <code>RecoverCredentials</code> functions used for credential retrieval.<a href="#section-6.3.2-1" class="pilcrow">¶</a></p>
 <div id="create-credential-request">
 <section id="section-6.3.2.1">
             <h5 id="name-createcredentialrequest">
 <a href="#section-6.3.2.1" class="section-number selfRef">6.3.2.1. </a><a href="#name-createcredentialrequest" class="section-name selfRef">CreateCredentialRequest</a>
             </h5>
-<p id="section-6.3.2.1-1">The CreateCredentialRequest is used by the client to initiate the credential
-retrieval process, and it produces a CredentialRequest message and OPRF state.<a href="#section-6.3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.2.1-1">The <code>CreateCredentialRequest</code> is used by the client to initiate the credential
+retrieval process, and it produces a <code>CredentialRequest</code> message and OPRF state.<a href="#section-6.3.2.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3.2.1-2">
 <pre>
 CreateCredentialRequest
@@ -2546,16 +2546,16 @@ def CreateCredentialRequest(password):
             <h5 id="name-createcredentialresponse">
 <a href="#section-6.3.2.2" class="section-number selfRef">6.3.2.2. </a><a href="#name-createcredentialresponse" class="section-name selfRef">CreateCredentialResponse</a>
             </h5>
-<p id="section-6.3.2.2-1">The CreateCredentialResponse function is used by the server to process the client's
-CredentialRequest message and complete the credential retrieval process, producing
-a CredentialResponse.<a href="#section-6.3.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.3.2.2-2">There are two scenarios to handle for the construction of a CredentialResponse
+<p id="section-6.3.2.2-1">The <code>CreateCredentialResponse</code> function is used by the server to process the client's
+<code>CredentialRequest</code> message and complete the credential retrieval process, producing
+a <code>CredentialResponse</code>.<a href="#section-6.3.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.2.2-2">There are two scenarios to handle for the construction of a <code>CredentialResponse</code>
 object: either the record for the client exists (corresponding to a properly
 registered client), or it was never created (corresponding to a client that has
 yet to register).<a href="#section-6.3.2.2-2" class="pilcrow">¶</a></p>
 <p id="section-6.3.2.2-3">In the case of an existing record with the corresponding identifier
 <code>credential_identifier</code>, the server invokes the following function to
-produce a CredentialResponse:<a href="#section-6.3.2.2-3" class="pilcrow">¶</a></p>
+produce a <code>CredentialResponse</code>:<a href="#section-6.3.2.2-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3.2.2-4">
 <pre>
 CreateCredentialResponse
@@ -2620,8 +2620,8 @@ that is unable to guess the registered password for the client corresponding to 
             <h5 id="name-recovercredentials">
 <a href="#section-6.3.2.3" class="section-number selfRef">6.3.2.3. </a><a href="#name-recovercredentials" class="section-name selfRef">RecoverCredentials</a>
             </h5>
-<p id="section-6.3.2.3-1">The RecoverCredentials function is used by the client to process the server's
-CredentialResponse message and produce the client's private key, server public
+<p id="section-6.3.2.3-1">The <code>RecoverCredentials</code> function is used by the client to process the server's
+<code>CredentialResponse</code> message and produce the client's private key, server public
 key, and the <code>export_key</code>.<a href="#section-6.3.2.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3.2.3-2">
 <pre>
@@ -2827,8 +2827,8 @@ def DeriveKeys(ikm, preamble):
           <h4 id="name-3dh-client-functions">
 <a href="#section-6.4.3" class="section-number selfRef">6.4.3. </a><a href="#name-3dh-client-functions" class="section-name selfRef">3DH Client Functions</a>
           </h4>
-<p id="section-6.4.3-1">The AuthClientStart function is used by the client to create a KE1
-message using a CredentialRequest function.<a href="#section-6.4.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.4.3-1">The <code>AuthClientStart</code> function is used by the client to create a <code>KE1</code>
+message using a <code>CredentialRequest</code> function.<a href="#section-6.4.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.3-2">
 <pre>
 AuthClientStart
@@ -2854,8 +2854,8 @@ def AuthClientStart(credential_request):
   return ke1
 </pre><a href="#section-6.4.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.3-3">The AuthClientFinalize function is used by the client to create a KE3
-message and output <code>session_key</code> using the server's KE2 message and
+<p id="section-6.4.3-3">The <code>AuthClientFinalize</code> function is used by the client to create a <code>KE3</code>
+message and output <code>session_key</code> using the server's <code>KE2</code> message and
 recovered credential information.<a href="#section-6.4.3-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.3-4">
 <pre>
@@ -2905,8 +2905,8 @@ def AuthClientFinalize(client_identity, client_private_key, server_identity,
           <h4 id="name-3dh-server-functions">
 <a href="#section-6.4.4" class="section-number selfRef">6.4.4. </a><a href="#name-3dh-server-functions" class="section-name selfRef">3DH Server Functions</a>
           </h4>
-<p id="section-6.4.4-1">The AuthServerRespond function is used by the server to process the client's
-KE1 message and public credential information to create a KE2 message.<a href="#section-6.4.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4.4-1">The <code>AuthServerRespond</code> function is used by the server to process the client's
+<code>KE1</code> message and public credential information to create a <code>KE2</code> message.<a href="#section-6.4.4-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.4-2">
 <pre>
 AuthServerRespond
@@ -2949,8 +2949,8 @@ def AuthServerRespond(server_identity, server_private_key, client_identity,
   return ke2
 </pre><a href="#section-6.4.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-6.4.4-3">The AuthServerFinalize function is used by the server to process the client's
-KE3 message and output the final <code>session_key</code>.<a href="#section-6.4.4-3" class="pilcrow">¶</a></p>
+<p id="section-6.4.4-3">The <code>AuthServerFinalize</code> function is used by the server to process the client's
+<code>KE3</code> message and output the final <code>session_key</code>.<a href="#section-6.4.4-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.4.4-4">
 <pre>
 AuthServerFinalize
