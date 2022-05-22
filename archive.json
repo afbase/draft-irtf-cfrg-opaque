@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-19T01:58:12.686648+00:00",
+  "timestamp": "2022-05-22T01:43:14.898698+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -57,6 +57,11 @@
       "name": "editorial",
       "description": "Editorial",
       "color": "c5def5"
+    },
+    {
+      "name": "optional",
+      "description": "Nice to have, but not necessary and won't block forward progress",
+      "color": "DEBBFA"
     }
   ],
   "issues": [
@@ -5412,31 +5417,35 @@
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/238",
       "state": "OPEN",
       "author": "daxpedda",
-      "authorAssociation": "NONE",
-      "assignees": [],
-      "labels": [],
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "chris-wood"
+      ],
+      "labels": [
+        "optional"
+      ],
       "body": "We have a use case where a HSM is used to store the server private key. Currently almost all HSMs use the PKCS#11 standard, which doesn't have support for ristretto255 + DH. It is my understanding that OPAQUE had official support for X25519 in the past but dropped it in favor of ristretto255.\r\n\r\nIs it possible to elaborate on the reasons for that decision? Is it still in scope to re-introduce it and provide test vectors?\r\n\r\nI believe that OPAQUE already does support using any algorithm as long as it does fulfill the stated security requirements, but official support would still be very favorable.\r\n\r\nIt should be noted that HSMs can use P256 instead, which is already officially supported by OPAQUE, but many, including us, would like to use Curve25519 when possible.",
       "createdAt": "2021-07-23T22:53:03Z",
-      "updatedAt": "2022-01-08T00:26:21Z",
+      "updatedAt": "2022-05-20T16:11:07Z",
       "closedAt": null,
       "comments": [
         {
           "author": "stef",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "you need a modulo inverse function to implement opaque, no x25519 implementation i know of supports this. As the the co-author of the pkcs#11 v3.0 i'm sure we did not add neither ristretto, nor support for modulo inverse to it.",
           "createdAt": "2021-07-23T22:58:39Z",
           "updatedAt": "2021-07-23T23:02:16Z"
         },
         {
           "author": "stef",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "this post explains why curve25519 cannot be used: https://moderncrypto.org/mail-archive/curves/2017/000906.html\r\n",
           "createdAt": "2021-07-23T23:31:26Z",
           "updatedAt": "2021-07-23T23:31:26Z"
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I'm a bit confused, maybe there is a misunderstanding here. It is my understanding that the inverse function is only needed on the client for unblinding, the only thing the HSM protects is the server private key, nothing else, PKCS#11 support isn't needed.\r\n\r\n~~I'm no cryptographer, so please forgive my naivety here, I was simply using scalars for OPRF, I didn't realize that using X25519 has any connection to the OPRF part and therefore requires the use of field elements.~~\r\n\r\nEDIT: Apparently I didn't properly understand what OPRF is, now that I looked at it closer, I believe what I have done was some kind of hybrid approach, where I was using ristretto255 for OPRF, but X25519 for the DH key exchange. I can understand if something like this might not be in scope for official support by OPAQUE, if that is the case, this can be closed.",
           "createdAt": "2021-07-24T08:53:49Z",
           "updatedAt": "2021-07-24T09:00:18Z"
@@ -5450,7 +5459,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> Even though the modular inverse operation is only needed for the OPRF client, the whole operation needs to happen in the same group. That's why you also need it on the server.\r\n\r\nI am assuming the reason why it has to happen in the same group is because the spec says so, I can't see where the connection is otherwise. But, why does \"the whole operation needs to happen in the same group\" imply that the modular inverse operation is needed on the server? The only operation I can see the server needs is the evaluation, but the secret scalar used here isn't the private key, as far as I understand. Did I misunderstand something?\r\n\r\n> That said, using the external mode, allowing the OPRF and AKE to have different algorithms, you can still use the HSM to store the server's AKE private key. This spec, though, defines OPAQUE-3DH, which uses the same group in both.\r\n\r\nI'm still confused about how the OPRF and AKE in internal mode don't allow different algorithms, I still can't see any connection. I guess, if what I'm proposing turns out to be possible in the first place, my proposal would include using different algorithms for OPRF and AKE to be supported in internal mode.\r\n\r\nMy understanding of all this is very surface-level, I might be missing something very obvious here, thank you for all the explanations.",
           "createdAt": "2021-07-24T11:11:25Z",
           "updatedAt": "2021-07-24T11:11:39Z"
@@ -5464,28 +5473,28 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> do you think you can use Ristretto255 on the client, and Curve25519 on the server? Or run the whole on the prime order subgroup of Curve25519?\r\n\r\nWhat I am proposing is to run the AKE with X25519 on both sides and the OPRF with ristretto255 on both sides, at least after your input :smile:.\r\n\r\n> We call the OPRF server key a \"private key\" as well (but it's not the same as the one of the AKE). That's the one you'd like to use within the HSM, correct?\r\n\r\nI believe this is the source of all misunderstandings here, I didn't realize that the OPRF server key may also be called \"private key\", this explains @stef's answer. I was actually planning to store the AKE key on the HSM, not the OPRF key, but that's only because it seems impossible to use OPRF with HSMs right now, otherwise I would store both.\r\n\r\n> Your questions and observations are totally valid and interesting :) please continue!\r\n\r\nI appreciate it, very encouraging :smiley:.\r\n\r\n---\r\n\r\nI'm drawing a lot of conclusions here that might be incorrect, so I would like to elaborate on the goal of what I am trying to do here instead of possibly focusing on the wrong solution.\r\n\r\nThe final goal is to secure OPAQUE with the help of an HSM and Curve25519. Currently HSMs don't support ristretto255, for both DH or scalar multiplication for OPRF. This leads me to my first assumption:\r\n- Storing the AKE private key on an HSM does provide **additional** security to OPAQUE, even though the OPRF secret key isn't secured through the HSM\r\n- X25519 can be used for AKE\r\n- (?) X25519 can still be used with 3DH\r\n- ristretto255 can still be used for OPRF\r\n\r\nAs far as I understand now, this isn't something the OPAQUE spec disallows:\r\n> The spec says *it should*, and recommends using the VOPRF suites. Of course, you are free to use any curve for the AKE, regardless of what the OPRF uses.\r\n\r\nWhat this issue is about is to confirm my assumptions and to ask for official support in the OPAQUE spec.",
           "createdAt": "2021-07-24T17:16:02Z",
           "updatedAt": "2021-07-24T17:16:02Z"
         },
         {
           "author": "stef",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": ">  - Storing the AKE private key on an HSM does provide additional security to OPAQUE, even though the OPRF secret key isn't secured through the HSM\r\n>  - X25519 can be used for AKE\r\n>  - (?) X25519 can still be used with 3DH\r\n>  - ristretto255 can still be used for OPRF\r\n\r\nyes to all. actually i did add 3dh to pkcs#11 back in v3.0 (and also the double ratchet). i'm not a member of the pkcs#11 wg anymore, but i can ping them to consider adding ristretto255 to a next revision (but that might take some time...)",
           "createdAt": "2021-07-24T18:03:39Z",
           "updatedAt": "2021-07-24T18:04:27Z"
         },
         {
           "author": "stef",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "btw even i was confused back then when i first read one of the early drafts about this - to me - strange terminology of the oprf having a keypair: https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/54 - turns out this is a thing for **v**oprfs.",
           "createdAt": "2021-07-24T18:08:15Z",
           "updatedAt": "2021-07-24T18:08:30Z"
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> i'm not a member of the pkcs#11 wg anymore, but i can ping them to consider adding ristretto255 to a next revision (but that might take some time...)\r\n\r\nThat would be great nonetheless! Even though it is unlikely that HSMs will implement it, even if it is in the PKCS#11 spec, unless ristretto255 becomes more popular.",
           "createdAt": "2021-07-24T20:19:29Z",
           "updatedAt": "2021-07-24T20:19:29Z"
@@ -5499,7 +5508,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> A different OPRF key is used for every client. Currently, the spec derives these individual keys using a stored secret seed, common to all, and the user id, thrown into hash-to-scalar. I don't know how nicely HSM play with lots of keys to store to support a very large user pool.\r\n\r\nThey don't, I was actually talking about storing the secret seed. Another misuse of terms from my side here. In any case, I don't believe that HSMs will support VOPRF key deriviation from a stored seed anytime soon and I don't even know if that actually increases security when the AKE private key is already stored.\r\n\r\n> It's not because curves are not in the list that they are not supported. No spec says that they are not supported. Re-reading the specs, though, I understand that they might be misleading, and could indeed need some text to make it clearer. Any idea for wording that would make that more clear?\r\n\r\nTo me it was actually clear enough, I just got a bit unsure through the misunderstandings in this issue. It would be great of course if OPAQUE specifically mentions the use-case of HSMs:\r\n- > The Group mode identifies the group used in the OPAQUE-3DH AKE. This SHOULD match that of the OPRF. For example, if the OPRF is OPRF(ristretto255, SHA-512), then Group SHOULD be ristretto255.\r\n\r\n  This may need some sort of exception.\r\n- Test vectors for X25519 AKE + ristretto255 OPRF would be nice\r\n- Mention in \"Configuration\" and \"Security Considerations\" would be great\r\n\r\nI understand if this isn't really in scope for OPAQUE. I'm willing to go into more detail about wording of course if it is in scope.",
           "createdAt": "2021-07-25T06:35:12Z",
           "updatedAt": "2021-07-25T06:35:12Z"
@@ -5513,7 +5522,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> > It would be great of course if OPAQUE specifically mentions the use-case of HSMs\r\n> \r\n> What would you like to see in the spec? It's intentionally high-level enough so implementors use the keys however they want.\r\n\r\nThe spec already recommends specific [configurations](https://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-06.html#name-configurations), it would be helpful if the use-case for HSMs is covered in the spec. Adding an additional recommended configuration in the case of HSMs would help people like me find a correct approach and encourage implementors to cover this use-case.\r\n\r\nIf a recommendation under [\"Configuration\"](https://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-06.html#name-configurations) seems to much, I believe a mention in [\"Security Considerations\"](https://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-06.html#name-security-considerations) seems appropriate.\r\n\r\nI'm gonna attempt to write down some wording I have in mind, I'm willing of course to make a PR, keep in mind I'm very new to this, IETF and cryptography in general, and english is my second language.\r\n```markdown\r\n# AKE Private Key Storage\r\n\r\nThe AKE private key can be securely stored in a HSM or similar. Upon compromise of the OPRF seed and client\r\nenvelopes, this would prevent an attacker from using this data to mount a server spoofing attack (someone more\r\nknowledgeable can insert actual security benefits here). The following configurations are RECOMMENDED for a\r\nscenario like this:\r\n- OPRF(ristretto255, SHA-512), HKDF-SHA-512, HMAC-SHA-512, SHA-512, Scrypt(32768,8,1), internal, X25519\r\n- OPRF(P-256, SHA-256), HKDF-SHA-256, HMAC-SHA-256, SHA-256, Scrypt(32768,8,1), internal, P-256\r\n\r\nSupporting implementations need to consider allowing separate AKE and OPRF algorithms and not requiring access\r\nto the AKE private key bytes, only support for generating shared keys for 3DH is necessary.\r\n```",
           "createdAt": "2021-07-26T10:53:29Z",
           "updatedAt": "2021-07-26T10:53:29Z"
@@ -5541,7 +5550,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Just saw it, thank you!",
           "createdAt": "2021-10-04T10:28:53Z",
           "updatedAt": "2021-10-04T10:28:53Z"
@@ -5555,14 +5564,14 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Isn't the AKE the group used within 3DH?",
           "createdAt": "2022-01-07T15:21:28Z",
           "updatedAt": "2022-01-07T15:21:28Z"
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Specifically the point is to protect the `server_private_key`, which as far as I know is used in 3DH.\r\nThe one mentioned here:\r\nhttps://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#section-5-1",
           "createdAt": "2022-01-07T15:24:20Z",
           "updatedAt": "2022-01-07T15:25:45Z"
@@ -5576,7 +5585,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Ah! I see the confusion, forgive me, I'm not that good with all the terminology.\r\nI didn't mean X25519 in the sense of the ECDH key exchange, I just meant Curve25519!\r\n\r\n> @daxpedda for clarification: is X25519 desired solely as a group within 3DH, or as a different AKE?\r\n\r\nDesired solely as the group within 3DH!",
           "createdAt": "2022-01-07T16:53:26Z",
           "updatedAt": "2022-01-07T16:53:26Z"
@@ -5590,7 +5599,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I don't believe so, I think the document can be clearer in some places which group is actually meant, the AKE or OPRF, even if it can be derived.\r\n\r\nI can spend some time later on and find some places where it wasn't perfectly clear to me.",
           "createdAt": "2022-01-07T16:58:48Z",
           "updatedAt": "2022-01-07T16:58:48Z"
@@ -5604,7 +5613,7 @@
         },
         {
           "author": "daxpedda",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I tried to re-read the spec a bit and be as skeptical as possible. I'm already much more comfortable with it then in the past, so it's hard to judge what I remember was confusing.\r\nThe thing I remember was that every time I read `private_key` or `public_key` somewhere I wasn't sure which group it was talking about. For example:\r\nhttps://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#section-5.1-3\r\nLooking at the vicinity of that part of the text, there is no mention of AKE, so I think for newcomers it might take extra effort to keep track of all of it.\r\n\r\nhttps://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#section-4-8\r\nIs a good example, it says everywhere what key it means.\r\nhttps://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#section-6.1 6.2 & 6.3 also are missing direct descriptions.",
           "createdAt": "2022-01-08T00:26:21Z",
           "updatedAt": "2022-01-08T00:26:21Z"
@@ -6225,11 +6234,12 @@
         "bytemare"
       ],
       "labels": [
-        "editorial"
+        "editorial",
+        "optional"
       ],
       "body": "The protocol's complexity has reached a point where it gets easy to be confused. Flowcharts of components and the complete protocol could help the new reader with a quick overview and better understanding.\r\n\r\n- [x] Registration - Client side\r\n- [x] Registration - Server side\r\n- [x] Login - Client side\r\n- [x] Login - Server",
       "createdAt": "2021-08-26T15:43:40Z",
-      "updatedAt": "2022-04-05T21:31:19Z",
+      "updatedAt": "2022-05-20T16:10:56Z",
       "closedAt": null,
       "comments": [
         {
@@ -7105,12 +7115,12 @@
       "author": "bytemare",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
-        "bytemare"
+        "chris-wood"
       ],
       "labels": [],
       "body": "It would be interesting to provide values, test vectors, and expected behavior for edge cases and conditions we expect the protocol and implementations to return errors. This will help implementors evaluate some security properties to a certain degree.\r\n\r\nWe could draw a first list of some of these values and testing functions (e.g. invalid points). This goes well in hand with #256 ",
       "createdAt": "2022-01-10T20:10:30Z",
-      "updatedAt": "2022-04-09T21:44:42Z",
+      "updatedAt": "2022-05-20T16:21:27Z",
       "closedAt": null,
       "comments": [
         {
@@ -7119,6 +7129,13 @@
           "body": "Pinged the VOPRF team in https://github.com/cfrg/draft-irtf-cfrg-voprf/issues/333 to see if such vectors are planned for the OPRF scope.",
           "createdAt": "2022-04-09T21:44:42Z",
           "updatedAt": "2022-04-09T21:44:42Z"
+        },
+        {
+          "author": "kevinlewi",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We will implement these test vectors for the three error types in the Error Considerations section (one for each).",
+          "createdAt": "2022-05-20T16:21:27Z",
+          "updatedAt": "2022-05-20T16:21:27Z"
         }
       ]
     },
@@ -7385,7 +7402,7 @@
       "id": "I_kwDOD79ejs5DDZ2x",
       "title": "Add more prose",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/334",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "chris-wood",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7394,8 +7411,8 @@
       "labels": [],
       "body": "Many of the sections in the document simply start with function or data structure descriptions without much context. We should add more prose so that the document is easier to follow and understand.",
       "createdAt": "2022-02-05T16:07:46Z",
-      "updatedAt": "2022-02-07T15:32:08Z",
-      "closedAt": null,
+      "updatedAt": "2022-05-21T00:29:04Z",
+      "closedAt": "2022-05-21T00:29:04Z",
       "comments": []
     },
     {
@@ -7403,7 +7420,7 @@
       "id": "I_kwDOD79ejs5DH95I",
       "title": "Rework AKE messages and structures",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/336",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "chris-wood",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -7414,8 +7431,8 @@
       ],
       "body": "This section has changed so much it no longer makes any sense. For example, what is the \"KE2 structure\"? It's not defined anywhere, yet it's referenced as if it has member fields. This needs to be done before the next version.",
       "createdAt": "2022-02-07T15:43:10Z",
-      "updatedAt": "2022-04-05T21:59:49Z",
-      "closedAt": null,
+      "updatedAt": "2022-05-20T05:46:09Z",
+      "closedAt": "2022-05-20T05:46:09Z",
       "comments": []
     },
     {
@@ -7534,7 +7551,7 @@
       "id": "I_kwDOD79ejs5E41MS",
       "title": "Should the OPRF seed and client keypair be different per client?",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/346",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jamesw1892",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -7543,8 +7560,8 @@
       "labels": [],
       "body": "[Paragraph 1 of section 5](https://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#section-5-1) states that the same keypair can be used with multiple clients and different OPRF seeds can be used for each client.\r\n\r\nWhereas [section 5.3](https://www.ietf.org/archive/id/draft-irtf-cfrg-opaque-07.html#name-finalize-registration) states that different keypairs can be used with each client and the same OPRF seed SHOULD be used for all clients.\r\n\r\nThis seems to be a bit confusing, it might be worth clarifying this in both places in the spec.",
       "createdAt": "2022-03-01T19:52:01Z",
-      "updatedAt": "2022-04-05T22:00:17Z",
-      "closedAt": null,
+      "updatedAt": "2022-05-20T11:10:40Z",
+      "closedAt": "2022-05-20T11:10:39Z",
       "comments": [
         {
           "author": "bytemare",
@@ -7559,6 +7576,13 @@
           "body": "Hi Daniel,\r\n\r\nThanks for your response, that clarifies things. I don't have any specific suggestions, maybe just say something like:\r\n\r\n\"While a different OPRF seed can be used for each client, the same OPRF seed may as well be used for all clients since regardless, a unique OPRF key will be derived for each client using it.\"\r\n\r\nAnd something exactly like what you said for AKE keypairs.",
           "createdAt": "2022-03-08T22:01:18Z",
           "updatedAt": "2022-03-08T22:01:18Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This has been fixed on the editor's copy, which no longer implies that the OPRF seed is different across users. (It's important that this seed is the same for all users for the purposes of preventing enumeration.) Closing as such. Please feel free to reopen if you think more should be done here.",
+          "createdAt": "2022-05-20T11:10:39Z",
+          "updatedAt": "2022-05-20T11:10:39Z"
         }
       ]
     },
@@ -7579,6 +7603,39 @@
       "updatedAt": "2022-05-17T08:36:59Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 359,
+      "id": "I_kwDOD79ejs5KFqC1",
+      "title": "Remove Nseed in favor of Nok everywhere",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/359",
+      "state": "OPEN",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "chris-wood"
+      ],
+      "labels": [],
+      "body": "It's one less constant and the result would be the same. I think I'd be fine with this change. @kevinlewi, @bytemare: thoughts?",
+      "createdAt": "2022-05-20T11:12:02Z",
+      "updatedAt": "2022-05-20T16:44:40Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "body": "So as the keyspace of decaf is higher than that of ristretto, it means that it goes as well (32 to 56), which would be a different value than for now (but for what we have not provided test vectors). It sounds indeed reasonable to me have a longer seed in these cases!",
+          "createdAt": "2022-05-20T16:19:19Z",
+          "updatedAt": "2022-05-20T16:19:19Z"
+        },
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah, I mean, anything longer than 32 is really overkill for security, but it might simplify implementations and help readability if there are less constants.",
+          "createdAt": "2022-05-20T16:32:33Z",
+          "updatedAt": "2022-05-20T16:32:33Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -24658,15 +24715,15 @@
       "labels": [
         "editorial"
       ],
-      "body": "closes #240 and #306\r\n\r\nThis suggests protecting the client's record during registration with HPKE.",
+      "body": "closes #240, #306, and #310\r\n\r\nThis suggests protecting the client's record during registration with HPKE.",
       "createdAt": "2022-01-09T18:10:41Z",
-      "updatedAt": "2022-04-05T21:17:35Z",
+      "updatedAt": "2022-05-22T01:19:35Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "855354fa80c3791870dd349909e3feb806562899",
       "headRepository": "cfrg/draft-irtf-cfrg-opaque",
       "headRefName": "dbz/hpke-record",
-      "headRefOid": "8dcf5edde33eced0770c891cf6893733cb27ba3a",
+      "headRefOid": "a63f064f3c43fb6098099ec8e25a83ea1758f27b",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -24790,6 +24847,164 @@
               "body": "I'm not sure this really exposes the rationale of the recommandation",
               "createdAt": "2022-02-14T02:00:56Z",
               "updatedAt": "2022-02-14T02:00:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dRDW",
+          "commit": {
+            "abbreviatedOid": "060fb40"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Mostly requesting simplifications.",
+          "createdAt": "2022-05-21T00:30:40Z",
+          "updatedAt": "2022-05-21T00:34:27Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "```suggestion\r\nencryption key generated by the client on registration that is sent to the server over\r\nan authenticated channel, such as one provided by TLS {{RFC8446}}.\r\n```",
+              "createdAt": "2022-05-21T00:30:40Z",
+              "updatedAt": "2022-05-21T00:34:27Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\r\nIn the event that this channel is compromised, this encryption key could be leaked\r\nto an attacker.\r\n```",
+              "createdAt": "2022-05-21T00:31:47Z",
+              "updatedAt": "2022-05-21T00:34:27Z"
+            },
+            {
+              "originalPosition": 23,
+              "body": "```suggestion\r\nOne mitigation against this threat is to additionally encrypt the `RegistrationRecord` \r\nsent from client to server at the application layer using public key encryption, e.g., \r\nwith HPKE {{?RFC9180}}.\r\n```",
+              "createdAt": "2022-05-21T00:33:02Z",
+              "updatedAt": "2022-05-21T00:34:27Z"
+            },
+            {
+              "originalPosition": 35,
+              "body": "```suggestion\r\n```\r\n\r\nI don't think we can keep this text since it would effectively yield a different protocol. Moreover, this is kind of redundant with the HPKE approach, so I don't think it adds much.",
+              "createdAt": "2022-05-21T00:34:16Z",
+              "updatedAt": "2022-05-21T00:34:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dyZo",
+          "commit": {
+            "abbreviatedOid": "d7d2ff2"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T00:45:38Z",
+          "updatedAt": "2022-05-22T00:45:38Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "I'm not at all convinced that it yields a different protocol, as this only replaces the envelope encryption, itself an added component to the original OPAQUE protocol. I agree that the added complexity is out of scope for the document though, that's why we said we would mention it here.\r\n\r\ncf the discussion in #310",
+              "createdAt": "2022-05-22T00:45:38Z",
+              "updatedAt": "2022-05-22T00:45:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dya9",
+          "commit": {
+            "abbreviatedOid": "d7d2ff2"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T00:47:27Z",
+          "updatedAt": "2022-05-22T00:47:27Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "I mean that the protocol mechanics change if this done rather than the existing encryption scheme. I agree that _functionally_ the protocol remains the same, but the implementation would be different. Hence, a different protocol.",
+              "createdAt": "2022-05-22T00:47:27Z",
+              "updatedAt": "2022-05-22T00:47:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dyey",
+          "commit": {
+            "abbreviatedOid": "060fb40"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T00:54:18Z",
+          "updatedAt": "2022-05-22T00:54:19Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "Would you accept a shorter, less detailed version of this paragraph stating this rationale? I think we should still mention that there _might_ be a problem for some threat models, and agree the countermeasures burden this spec",
+              "createdAt": "2022-05-22T00:54:19Z",
+              "updatedAt": "2022-05-22T00:54:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dyfM",
+          "commit": {
+            "abbreviatedOid": "8a46cd8"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T00:55:19Z",
+          "updatedAt": "2022-05-22T00:55:20Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "Sure, but isn't that already covered by the HPKE suggestion? I don't think any more detail is useful.",
+              "createdAt": "2022-05-22T00:55:19Z",
+              "updatedAt": "2022-05-22T00:55:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dyqn",
+          "commit": {
+            "abbreviatedOid": "060fb40"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T01:13:30Z",
+          "updatedAt": "2022-05-22T01:13:30Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "Not really, the first addresses TLS compromission, and the second addresses the fact of having a client secret stored on the server. \r\n\r\nI updated the paragraph",
+              "createdAt": "2022-05-22T01:13:30Z",
+              "updatedAt": "2022-05-22T01:13:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dyul",
+          "commit": {
+            "abbreviatedOid": "a63f064"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T01:19:35Z",
+          "updatedAt": "2022-05-22T01:19:35Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "I still don't get it. In both cases public key encryption is used. I think the latter case should be removed entirely.",
+              "createdAt": "2022-05-22T01:19:35Z",
+              "updatedAt": "2022-05-22T01:19:35Z"
             }
           ]
         }
@@ -27496,26 +27711,248 @@
       "id": "PR_kwDOD79ejs437_8w",
       "title": "Reordering AKE subsections",
       "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/355",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "kevinlewi",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This finishes the last portion of #352, in which I wanted to reorder the subsections slightly in the AKE portion to make things more clear.\r\n\r\nBefore this change, we had the following ordering of subsections in AKE:\r\n\r\n\"Online Authenticated Key Exchange\" main section with protocol description at a high level \r\n- \"Client Authentication Functions\" subsection\r\n- \"Server Authentication Functions\" subsection\r\n- \"Credential Retrieval\" subsection\r\n- \"AKE Protocol\"\r\n  - \"AKE Messages\" section, this is where KE1, KE2, KE3 are defined\r\n  - \"3DH Client Functions\" subsection\r\n  - \"3DH Server Functions\" subsection\r\n\r\nSo the main problem was that the first two subsections, Client/Server Authentication Functions, were outputting messages that were only defined in the \"AKE Messages\" subsection, which was much later.\r\n\r\nThis seems like quite a different structure from the Registration portion, which is currently organized like:\r\n\r\n\"Client Credential Storage and Key Recovery\" main section\r\n\"Offline Registration\" main section\r\n- \"Registration Messages\" subsection\r\n- \"Registration Functions\" subsection\r\n\r\nwhich is a way simpler layout.\r\n\r\n\r\n--------\r\n\r\nSo the change I am making here is to:\r\n1) Combine the \"Client Authentication Functions\" and \"Server Authentication Functions\" into one subsection, called \"AKE Functions\", so that it matches up with the layout of registration\r\n2) Put \"AKE Messages\" as the section immediately following the main protocol description, followed by the new \"AKE Functions\" subsection\r\n3) Leave the remainder of the subsections as-is in terms of ordering. So the new layout looks like this now:\r\n\r\n\"Online Authenticated Key Exchange\" main section with protocol description at a high level \r\n- \"AKE Messages\" subsection\r\n- \"AKE Functions\" subsection\r\n- \"Credential Retrieval\" subsection\r\n- \"AKE Protocol\"\r\n  - \"3DH Client Functions\" subsection\r\n  - \"3DH Server Functions\" subsection\r\n  \r\n  Hope this makes sense!\r\n  \r\n  In making this change, there were also some smaller adjustments I made, as well:\r\n  - renamed the 3dh functions from \"Start\" to \"AuthStart\", \"Response\" to \"AuthRespond\" (it should be at least be a verb), \"ClientFinalize\" to \"AuthClientFinalize\", and \"ServerFinalize\" to \"AuthServerFinalize\"\r\n  - I also added a definition for ServerFinish, which simply calls AuthServerFinalize, but this was previously a completely undefined function\r\n  - Added text at the beginning of the \"AKE Functions\" subsection to clarify that the subroutines that we call there are defined in later sections\r\n\r\nBtw, a change I was tempted to make, but did not end up making was to combine the \"3DH client functions\" and \"3DH server functions\" also into one section. We don't seem to be doing the splitting of client vs. server functions elsewhere anymore (especially after this change), so it is necessary that we do it in the very last section?\r\n",
       "createdAt": "2022-05-17T08:18:29Z",
-      "updatedAt": "2022-05-17T08:22:39Z",
+      "updatedAt": "2022-05-20T05:46:09Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "78b3e81eceb98202a0fd32afa36c158392c97ecd",
       "headRepository": "kevinlewi/draft-irtf-cfrg-opaque",
       "headRefName": "reorder_ake_subsections",
-      "headRefOid": "2af82e2067ef550d653bef6f18d9f4c6e63564cf",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "000337fbe7fa78618c3d625346bb2ef3cb993185",
+      "closedAt": "2022-05-20T05:46:09Z",
+      "mergedAt": "2022-05-20T05:46:09Z",
+      "mergedBy": "kevinlewi",
+      "mergeCommit": {
+        "oid": "acfa39d663e9280af530496403f1a0779676ee80"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOD79ejs46X8bk",
+          "commit": {
+            "abbreviatedOid": "2af82e2"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM with one suggestion for a rename. This is indeed a better layout in my opinion!",
+          "createdAt": "2022-05-19T23:11:15Z",
+          "updatedAt": "2022-05-19T23:11:44Z",
+          "comments": [
+            {
+              "originalPosition": 95,
+              "body": "Should we make `AuthStart` be `AuthClientStart` (and similar for AuthRespond) so the roles are explicit?",
+              "createdAt": "2022-05-19T23:11:15Z",
+              "updatedAt": "2022-05-19T23:11:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46YP-V",
+          "commit": {
+            "abbreviatedOid": "2af82e2"
+          },
+          "author": "kevinlewi",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-20T02:00:12Z",
+          "updatedAt": "2022-05-20T02:00:13Z",
+          "comments": [
+            {
+              "originalPosition": 95,
+              "body": "Good idea! Updated in the latest commit.",
+              "createdAt": "2022-05-20T02:00:13Z",
+              "updatedAt": "2022-05-20T02:00:13Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 357,
+      "id": "PR_kwDOD79ejs44Lqdt",
+      "title": "Add prose to section headers to guide the reader",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/357",
+      "state": "MERGED",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #334.",
+      "createdAt": "2022-05-20T11:00:00Z",
+      "updatedAt": "2022-05-21T00:29:04Z",
+      "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "baseRefName": "master",
+      "baseRefOid": "6982436b2d58f92ffe4556d5e8a9312cad5a32e6",
+      "headRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "headRefName": "caw/intros",
+      "headRefOid": "d36a49435b933520bc7a636a288cb62c0fa64ff5",
+      "closedAt": "2022-05-21T00:29:04Z",
+      "mergedAt": "2022-05-21T00:29:04Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "34c689d0d03b4b2a731f3a84bdf73185828519a0"
+      },
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> We are doing backticks for all function and message names, right? Just checking... I did not mark all of the ones towards the end of the file, but if this is the case, please update!\r\n\r\nBackticked everything! Will resolve conflicts and then merge.",
+          "createdAt": "2022-05-21T00:27:55Z",
+          "updatedAt": "2022-05-21T00:27:55Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOD79ejs46bYzI",
+          "commit": {
+            "abbreviatedOid": "cd71063"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-05-20T14:58:50Z",
+          "updatedAt": "2022-05-20T14:58:50Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dQYb",
+          "commit": {
+            "abbreviatedOid": "cd71063"
+          },
+          "author": "kevinlewi",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "We are doing backticks for all function and message names, right? Just checking... I did not mark all of the ones towards the end of the file, but if this is the case, please update!\r\n\r\nOtherwise, looks good :)",
+          "createdAt": "2022-05-21T00:14:07Z",
+          "updatedAt": "2022-05-21T00:18:25Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "These should be displayed using backticks right?",
+              "createdAt": "2022-05-21T00:14:07Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 52,
+              "body": "Same here regarding backticks, though I see we are less consistent about function names and backticking them. Can you also backtick any occurrences of function names?",
+              "createdAt": "2022-05-21T00:15:08Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 120,
+              "body": "backticks for ClientInit and KE1",
+              "createdAt": "2022-05-21T00:15:36Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 131,
+              "body": "ServerInit, KE1, KE2 backticks",
+              "createdAt": "2022-05-21T00:15:59Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 141,
+              "body": "ClientFinish, KE3 backticks",
+              "createdAt": "2022-05-21T00:16:09Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 156,
+              "body": "ServerFinish backticks",
+              "createdAt": "2022-05-21T00:16:24Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 157,
+              "body": "KE3 backticks",
+              "createdAt": "2022-05-21T00:16:39Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 174,
+              "body": "CredentialRequest and CredentialResponse backticks",
+              "createdAt": "2022-05-21T00:17:06Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 185,
+              "body": "Backticks for function names",
+              "createdAt": "2022-05-21T00:17:16Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            },
+            {
+              "originalPosition": 190,
+              "body": "Backticks for function names and message names",
+              "createdAt": "2022-05-21T00:17:27Z",
+              "updatedAt": "2022-05-21T00:18:25Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 358,
+      "id": "PR_kwDOD79ejs44Ls_W",
+      "title": "Fix some bugs point out offline",
+      "url": "https://github.com/cfrg/draft-irtf-cfrg-opaque/pull/358",
+      "state": "MERGED",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "No corresponding issue.",
+      "createdAt": "2022-05-20T11:10:53Z",
+      "updatedAt": "2022-05-21T00:22:17Z",
+      "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "baseRefName": "master",
+      "baseRefOid": "acfa39d663e9280af530496403f1a0779676ee80",
+      "headRepository": "cfrg/draft-irtf-cfrg-opaque",
+      "headRefName": "caw/some-bugs",
+      "headRefOid": "ef13567ac989bf901c2a1e8c9781032094f003ad",
+      "closedAt": "2022-05-21T00:22:17Z",
+      "mergedAt": "2022-05-21T00:22:17Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "6982436b2d58f92ffe4556d5e8a9312cad5a32e6"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOD79ejs46bkXP",
+          "commit": {
+            "abbreviatedOid": "ef13567"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-05-20T15:32:25Z",
+          "updatedAt": "2022-05-20T15:32:25Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dQnj",
+          "commit": {
+            "abbreviatedOid": "ef13567"
+          },
+          "author": "kevinlewi",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM!",
+          "createdAt": "2022-05-21T00:19:56Z",
+          "updatedAt": "2022-05-21T00:19:56Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
