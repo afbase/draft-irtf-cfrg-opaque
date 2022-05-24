@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-22T01:43:14.898698+00:00",
+  "timestamp": "2022-05-24T01:53:36.008300+00:00",
   "repo": "cfrg/draft-irtf-cfrg-opaque",
   "labels": [
     {
@@ -24717,13 +24717,13 @@
       ],
       "body": "closes #240, #306, and #310\r\n\r\nThis suggests protecting the client's record during registration with HPKE.",
       "createdAt": "2022-01-09T18:10:41Z",
-      "updatedAt": "2022-05-22T01:19:35Z",
+      "updatedAt": "2022-05-22T02:09:26Z",
       "baseRepository": "cfrg/draft-irtf-cfrg-opaque",
       "baseRefName": "master",
       "baseRefOid": "855354fa80c3791870dd349909e3feb806562899",
       "headRepository": "cfrg/draft-irtf-cfrg-opaque",
       "headRefName": "dbz/hpke-record",
-      "headRefOid": "a63f064f3c43fb6098099ec8e25a83ea1758f27b",
+      "headRefOid": "306b20e2604ec52e17bbc9a77dc0c5511d903ece",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -25005,6 +25005,26 @@
               "body": "I still don't get it. In both cases public key encryption is used. I think the latter case should be removed entirely.",
               "createdAt": "2022-05-22T01:19:35Z",
               "updatedAt": "2022-05-22T01:19:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOD79ejs46dzKZ",
+          "commit": {
+            "abbreviatedOid": "060fb40"
+          },
+          "author": "bytemare",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-22T02:07:18Z",
+          "updatedAt": "2022-05-22T02:07:18Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "In the first case, the record holding the masking key is encrypted on registration. On login, the current symmetric method is used.\r\n\r\nIn the second case, the whole symmetric encryption is dropped: the user replaces the symmetric key with a public key on registration (therefore meaning risk number one is thwarted without encryption of the record), and the server encrypts the envelope with that provided key. Here the server does not need to store a secret value.\r\n\r\nBoth mechanisms use public-key encryption, yes, but only the second one addresses both risks. That's why I'm insisting on its value :)",
+              "createdAt": "2022-05-22T02:07:18Z",
+              "updatedAt": "2022-05-22T02:07:18Z"
             }
           ]
         }
